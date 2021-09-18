@@ -1,1 +1,1 @@
-web: java -jar target/TuxiMusic-1.0-SNAPSHOT.jar
+worker: java -jar target/TuxiMusic-1.0-SNAPSHOT.jar
