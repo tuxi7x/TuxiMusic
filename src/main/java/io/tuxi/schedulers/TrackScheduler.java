@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.stream.Collectors;
 
 /**
  * This class schedules tracks for the audio player. It contains the queue of tracks.
@@ -64,5 +63,14 @@ public class TrackScheduler extends AudioEventAdapter {
         if (endReason.mayStartNext) {
             nextTrack();
         }
+    }
+
+    public AudioTrack removeTrackInQueue (long positionOfTrack) {
+        AudioTrack removedTrack = queue.stream()
+                .filter(track -> track.getPosition() == positionOfTrack)
+                .findAny()
+                .orElse(null);
+        queue.remove(removedTrack);
+        return removedTrack;
     }
 }
