@@ -92,5 +92,6 @@ public class Main {
         jda.upsertCommand("skip", "Skip a music").queue();
         jda.upsertCommand("current", "Get current music").queue();
         jda.upsertCommand("queue", "Get songs in queue").queue();
+        jda.upsertCommand("remove", "Remove song with a certain position").addOption(OptionType.INTEGER, "position", "The position of the song to be removed", true).queue();
     }
 }
