@@ -4,13 +4,13 @@ This project is a Discord Music Bot written in Java, using JDA as the Discord Li
 
 ## Dependencies
 
-[JDA](https://github.com/DV8FromTheWorld/JDA)
-[Lavaplayer](https://github.com/sedmelluq/lavaplayer)
+[JDA](https://github.com/DV8FromTheWorld/JDA)  
+[Lavaplayer](https://github.com/sedmelluq/lavaplayer)  
 
 ## Installing
 
-First, clone this repository in a cmd using
-`git clone https://github.com/tuxi7x/TuxiMusic`
+First, clone this repository in a cmd using  
+`git clone https://github.com/tuxi7x/TuxiMusic`  
 
-Then compile the source, and run
+Then compile the source, and run  
 `java io.tuxi.Main <discordBotToken>`
