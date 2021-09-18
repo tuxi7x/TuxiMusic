@@ -65,11 +65,12 @@ public class TrackScheduler extends AudioEventAdapter {
         }
     }
 
-    public AudioTrack removeTrackInQueue (long positionOfTrack) {
-        AudioTrack removedTrack = queue.stream()
-                .filter(track -> track.getPosition() == positionOfTrack)
-                .findAny()
-                .orElse(null);
+    public AudioTrack removeTrackInQueue (int positionOfTrack) {
+        List<AudioTrack> tracks = getTracks();
+        if (tracks.size() <= positionOfTrack - 1) {
+            return null;
+        }
+        AudioTrack removedTrack = tracks.get(positionOfTrack - 1);
         queue.remove(removedTrack);
         return removedTrack;
     }

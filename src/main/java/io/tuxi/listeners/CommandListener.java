@@ -28,8 +28,8 @@ public class CommandListener extends ListenerAdapter {
         } else if (event.getName().equals("current")) {
             musicRepository.sendCurrent(event);
         } else if (event.getName().equals("remove")) {
-            long positionOfTrack = Objects.requireNonNull(event.getOption("url")).getAsLong();
-            musicRepository.removeTrackFromQueue(event, positionOfTrack);
+            long positionOfTrack = Objects.requireNonNull(event.getOption("position")).getAsLong();
+            musicRepository.removeTrackFromQueue(event,(int)positionOfTrack);
         }
 
 

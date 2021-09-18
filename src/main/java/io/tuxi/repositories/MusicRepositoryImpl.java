@@ -59,7 +59,7 @@ public class MusicRepositoryImpl implements MusicRepository {
                     firstTrack = playlist.getTracks().get(0);
                 }
 
-                event.reply("Adding to queue " + firstTrack.getInfo().title + " (first track of playlist " + playlist.getName() + ")").queue();
+                event.reply("Adding to queue: " + firstTrack.getInfo().title + " (first track of playlist " + playlist.getName() + ")").queue();
 
                 play(event.getTextChannel().getGuild(), musicManager, firstTrack);
             }
@@ -139,7 +139,7 @@ public class MusicRepositoryImpl implements MusicRepository {
     }
 
     @Override
-    public void removeTrackFromQueue(SlashCommandEvent event, long positionOfTrack) {
+    public void removeTrackFromQueue(SlashCommandEvent event, int positionOfTrack) {
         GuildMusicManager musicManager = getGuildAudioPlayer(event.getTextChannel().getGuild());
         if(positionOfTrack < 1) {
             event.reply("The removed song's position must be a positive number!").queue();

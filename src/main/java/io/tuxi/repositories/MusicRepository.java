@@ -19,7 +19,7 @@ public interface MusicRepository {
     void skipTrack(SlashCommandEvent event);
     void sendQueue(SlashCommandEvent event);
     void sendCurrent(SlashCommandEvent event);
-    void removeTrackFromQueue(SlashCommandEvent event, long positionOfTrack);
+    void removeTrackFromQueue(SlashCommandEvent event, int positionOfTrack);
 
     static void connectToFirstVoiceChannel(AudioManager audioManager) {
         if (!audioManager.isConnected()) {
