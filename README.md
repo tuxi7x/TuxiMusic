@@ -12,5 +12,7 @@ This project is a Discord Music Bot written in Java, using JDA as the Discord Li
 First, clone this repository in a cmd using  
 `git clone https://github.com/tuxi7x/TuxiMusic`  
 
+**Important: You have to set the DISCORD_TOKEN environment variable to your discord bot token!**
+
 Then compile the source, and run  
-`java io.tuxi.Main <discordBotToken>`
+`java io.tuxi.Main`

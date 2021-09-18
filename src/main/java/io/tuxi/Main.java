@@ -26,8 +26,10 @@ public class Main {
 
     public static void main(String[] args) throws Exception {
 
-        if (args.length < 1) {
-            System.out.println("You have to provide a token as first argument!");
+        final String discordToken = System.getenv("DISCORD_TOKEN");
+
+        if (discordToken == null || discordToken.length() == 0) {
+            System.out.println("You have to provide a token as an environment variable!");
             System.exit(1);
         }
 
@@ -81,7 +83,7 @@ public class Main {
             }
         };
 
-        JDA jda = JDABuilder.create(args[0], GUILD_MESSAGES, GUILD_VOICE_STATES)
+        JDA jda = JDABuilder.create(discordToken, GUILD_MESSAGES, GUILD_VOICE_STATES)
                 .addEventListeners(new CommandListener(new MusicRepositoryImpl(audioPlayerManager, musicManagers)))
                 .setActivity(botActivity)
                 .build();
