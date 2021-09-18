@@ -3,7 +3,6 @@ package io.tuxi.repositories;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import io.tuxi.managers.GuildMusicManager;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.VoiceChannel;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.managers.AudioManager;
@@ -20,6 +19,7 @@ public interface MusicRepository {
     void skipTrack(SlashCommandEvent event);
     void sendQueue(SlashCommandEvent event);
     void sendCurrent(SlashCommandEvent event);
+    void removeTrackFromQueue(SlashCommandEvent event, long positionOfTrack);
 
     static void connectToFirstVoiceChannel(AudioManager audioManager) {
         if (!audioManager.isConnected()) {

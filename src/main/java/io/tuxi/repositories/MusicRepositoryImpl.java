@@ -8,15 +8,11 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import io.tuxi.managers.GuildMusicManager;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.MessageEmbed;
-import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 
 import java.awt.*;
-import java.time.Duration;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 public class MusicRepositoryImpl implements MusicRepository {
     private final AudioPlayerManager playerManager;
@@ -140,6 +136,22 @@ public class MusicRepositoryImpl implements MusicRepository {
 
 
         event.reply("Now playing: " + title + " (" + millisecondsToTime(position)  + "/" + millisecondsToTime(duration) + ")").queue();
+    }
+
+    @Override
+    public void removeTrackFromQueue(SlashCommandEvent event, long positionOfTrack) {
+        GuildMusicManager musicManager = getGuildAudioPlayer(event.getTextChannel().getGuild());
+        if(positionOfTrack < 1) {
+            event.reply("The removed song's position must be a positive number!").queue();
+            return;
+        }
+        AudioTrack removedSong = musicManager.scheduler.removeTrackInQueue(positionOfTrack);
+        if(removedSong == null) {
+            event.reply("Couldn't remove song from queue with the given position!").queue();
+            return;
+        }
+
+        event.reply("Successfully removed song from queue: " + removedSong.getInfo().title).queue();
     }
 
     private String millisecondsToTime(long milliseconds) {
