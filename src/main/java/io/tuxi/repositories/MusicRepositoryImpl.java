@@ -16,6 +16,7 @@ import java.awt.*;
 import java.time.Duration;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 public class MusicRepositoryImpl implements MusicRepository {
     private final AudioPlayerManager playerManager;
@@ -118,11 +119,8 @@ public class MusicRepositoryImpl implements MusicRepository {
             AudioTrack track = tracks.get(i);
             String title = track.getInfo().title;
             long duration = track.getDuration();
-            Duration dur = Duration.ofMillis(duration);
-            String durStr = String.format("%02d:%02d",
-                    dur.toMinutesPart(), dur.toSecondsPart());
 
-            String line = title + " (" + durStr + ")";
+            String line = title + " (" + millisecondsToTime(duration) + ")";
             embed.addField(String.valueOf(i+1), line, false);
         }
         event.replyEmbeds(embed.build()).queue();
@@ -139,13 +137,22 @@ public class MusicRepositoryImpl implements MusicRepository {
         String title = track.getInfo().title;
         long duration = track.getDuration();
         long position = track.getPosition();
-        Duration dur = Duration.ofMillis(duration);
-        String durStr = String.format("%02d:%02d",
-                dur.toMinutesPart(), dur.toSecondsPart());
-        Duration pos = Duration.ofMillis(position);
-        String posStr = String.format("%02d:%02d",
-                pos.toMinutesPart(), pos.toSecondsPart());
 
-        event.reply("Now playing: " + title + " (" + posStr + "/" + durStr + ")").queue();
+
+        event.reply("Now playing: " + title + " (" + millisecondsToTime(position)  + "/" + millisecondsToTime(duration) + ")").queue();
+    }
+
+    private String millisecondsToTime(long milliseconds) {
+        long minutes = (milliseconds / 1000) / 60;
+        long seconds = (milliseconds / 1000) % 60;
+        String secondsStr = Long.toString(seconds);
+        String secs;
+        if (secondsStr.length() >= 2) {
+            secs = secondsStr.substring(0, 2);
+        } else {
+            secs = "0" + secondsStr;
+        }
+
+        return minutes + ":" + secs;
     }
 }
