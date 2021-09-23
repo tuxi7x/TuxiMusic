@@ -70,7 +70,7 @@ public class MusicRepositoryImpl implements MusicRepository {
                         play(event, musicManager, track);
                     }
                 }
-                event.reply("Playlist named " + playlist.getName() + " of" + playlistTracks.size() + 1 + " tracks added to queue! ").queue();
+                event.reply("Playlist named " + playlist.getName() + " of" + (playlistTracks.size() + 1) + " tracks added to queue! ").queue();
             }
 
             @Override
