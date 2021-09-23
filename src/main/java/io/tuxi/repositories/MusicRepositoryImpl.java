@@ -59,14 +59,18 @@ public class MusicRepositoryImpl implements MusicRepository {
             @Override
             public void playlistLoaded(AudioPlaylist playlist) {
                 AudioTrack firstTrack = playlist.getSelectedTrack();
-
+                List<AudioTrack> playlistTracks = playlist.getTracks();
                 if (firstTrack == null) {
                     firstTrack = playlist.getTracks().get(0);
+                    play(event, musicManager, firstTrack);
+                    playlistTracks.remove(firstTrack);
                 }
-
-                event.reply("Adding to queue: " + firstTrack.getInfo().title + " (first track of playlist " + playlist.getName() + ")").queue();
-
-                play(event, musicManager, firstTrack);
+                for (AudioTrack track : playlistTracks) {
+                    if (track != null) {
+                        play(event, musicManager, track);
+                    }
+                }
+                event.reply("Playlist named " + playlist.getName() + " of" + playlistTracks.size() + 1 + " tracks added to queue! ").queue();
             }
 
             @Override
