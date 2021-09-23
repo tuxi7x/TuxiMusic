@@ -8,8 +8,13 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import io.tuxi.managers.GuildMusicManager;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.GuildVoiceState;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.VoiceChannel;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.managers.AudioManager;
 
+import javax.annotation.Nullable;
 import java.awt.*;
 import java.util.List;
 import java.util.Map;
@@ -48,7 +53,7 @@ public class MusicRepositoryImpl implements MusicRepository {
             public void trackLoaded(AudioTrack track) {
                 event.reply("Adding to queue " + track.getInfo().title).queue();
 
-                play(event.getTextChannel().getGuild(), musicManager, track);
+                play(event, musicManager, track);
             }
 
             @Override
@@ -61,7 +66,7 @@ public class MusicRepositoryImpl implements MusicRepository {
 
                 event.reply("Adding to queue: " + firstTrack.getInfo().title + " (first track of playlist " + playlist.getName() + ")").queue();
 
-                play(event.getTextChannel().getGuild(), musicManager, firstTrack);
+                play(event, musicManager, firstTrack);
             }
 
             @Override
@@ -77,9 +82,16 @@ public class MusicRepositoryImpl implements MusicRepository {
     }
 
     @Override
-    public void play(Guild guild, GuildMusicManager musicManager, AudioTrack track) {
-        MusicRepository.connectToFirstVoiceChannel(guild.getAudioManager());
-
+    public void play(SlashCommandEvent event, GuildMusicManager musicManager, AudioTrack track) {
+        Guild guild = event.getTextChannel().getGuild();
+        // The warning is suppressed, because the null check is done before using the variable
+        @SuppressWarnings("ConstantConditions")
+        VoiceChannel senderVoiceChannel = event.getMember().getVoiceState().getChannel();
+        if (senderVoiceChannel != null) {
+            connectToVoiceChannel(senderVoiceChannel, guild.getAudioManager());
+        } else {
+            connectToFirstVoiceChannel(guild.getAudioManager());
+        }
         musicManager.scheduler.queue(track);
     }
 
@@ -88,7 +100,7 @@ public class MusicRepositoryImpl implements MusicRepository {
         GuildMusicManager musicManager = getGuildAudioPlayer(event.getTextChannel().getGuild());
         List<AudioTrack> tracks = musicManager.scheduler.getTracks();
         if (tracks.size() == 0) {
-            event.reply("The queue is empty!").queue();
+            event.reply("Skipped the track, and the queue is empty!").queue();
             musicManager.scheduler.nextTrack();
             return;
         }
@@ -111,13 +123,13 @@ public class MusicRepositoryImpl implements MusicRepository {
         embed.setTitle("Songs in queue", null);
         embed.setColor(Color.yellow);
 
-        for (int i = 0; i<tracks.size(); i++) {
+        for (int i = 0; i < tracks.size(); i++) {
             AudioTrack track = tracks.get(i);
             String title = track.getInfo().title;
             long duration = track.getDuration();
 
             String line = title + " (" + millisecondsToTime(duration) + ")";
-            embed.addField(String.valueOf(i+1), line, false);
+            embed.addField(String.valueOf(i + 1), line, false);
         }
         event.replyEmbeds(embed.build()).queue();
     }
@@ -135,24 +147,43 @@ public class MusicRepositoryImpl implements MusicRepository {
         long position = track.getPosition();
 
 
-        event.reply("Now playing: " + title + " (" + millisecondsToTime(position)  + "/" + millisecondsToTime(duration) + ")").queue();
+        event.reply("Now playing: " + title + " (" + millisecondsToTime(position) + "/" + millisecondsToTime(duration) + ")").queue();
     }
 
     @Override
     public void removeTrackFromQueue(SlashCommandEvent event, int positionOfTrack) {
         GuildMusicManager musicManager = getGuildAudioPlayer(event.getTextChannel().getGuild());
-        if(positionOfTrack < 1) {
+        if (positionOfTrack < 1) {
             event.reply("The removed song's position must be a positive number!").queue();
             return;
         }
         AudioTrack removedSong = musicManager.scheduler.removeTrackInQueue(positionOfTrack);
-        if(removedSong == null) {
+        if (removedSong == null) {
             event.reply("Couldn't remove song from queue with the given position!").queue();
             return;
         }
 
         event.reply("Successfully removed song from queue: " + removedSong.getInfo().title).queue();
     }
+
+    @Override
+    public void connectToVoiceChannel(@Nullable VoiceChannel voiceChannel, AudioManager audioManager) {
+        if (!audioManager.isConnected()) {
+            audioManager.openAudioConnection(voiceChannel);
+        }
+    }
+
+
+    @Override
+    public void connectToFirstVoiceChannel(AudioManager audioManager) {
+        if (!audioManager.isConnected()) {
+            for (VoiceChannel vc : audioManager.getGuild().getVoiceChannels()) {
+                audioManager.openAudioConnection(vc);
+                break;
+            }
+        }
+    }
+
 
     private String millisecondsToTime(long milliseconds) {
         long minutes = (milliseconds / 1000) / 60;
@@ -167,4 +198,6 @@ public class MusicRepositoryImpl implements MusicRepository {
 
         return minutes + ":" + secs;
     }
+
+
 }

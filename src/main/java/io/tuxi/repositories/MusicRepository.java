@@ -15,20 +15,14 @@ public interface MusicRepository {
 
     GuildMusicManager getGuildAudioPlayer(Guild guild);
     void loadAndPlay(final SlashCommandEvent event, final String trackUrl);
-    void play(Guild guild, GuildMusicManager musicManager, AudioTrack track);
+    void play(SlashCommandEvent event, GuildMusicManager musicManager, AudioTrack track);
     void skipTrack(SlashCommandEvent event);
     void sendQueue(SlashCommandEvent event);
     void sendCurrent(SlashCommandEvent event);
     void removeTrackFromQueue(SlashCommandEvent event, int positionOfTrack);
 
-    static void connectToFirstVoiceChannel(AudioManager audioManager) {
-        if (!audioManager.isConnected()) {
-            for (VoiceChannel voiceChannel : audioManager.getGuild().getVoiceChannels()) {
-                audioManager.openAudioConnection(voiceChannel);
-                break;
-            }
-        }
-    }
+    void connectToVoiceChannel(VoiceChannel voiceChannel, AudioManager audioManager);
+    void connectToFirstVoiceChannel(AudioManager audioManager);
 
 
 }
